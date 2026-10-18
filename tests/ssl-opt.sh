@@ -10353,12 +10353,14 @@ run_test    "EC restart: TLS, max_ops=1000 no client auth (USE_PSA)" \
             -C "mbedtls_ecdh_make_public.*4b00" \
             -C "mbedtls_pk_sign.*4b00"
 
-# Restartable is only for ECDHE-ECDSA, with another ciphersuite we expect no
-# restartable behaviour at all (not even client auth).
+# With ECDHE-RSA the ECC computations are restartable as with ECDHE-ECDSA --
+# the ECDH, and the client's signature with its EC key -- while the RSA
+# verifications of the server's signature and chain run to the end.
 # This is the same as "EC restart: TLS, max_ops=1000" except with ECDHE-RSA,
-# and all 4 assertions negated.
+# and the RSA assertions negated.
 requires_config_enabled MBEDTLS_ECP_RESTARTABLE
 requires_config_enabled MBEDTLS_ECP_DP_SECP256R1_ENABLED
+requires_config_disabled MBEDTLS_USE_PSA_CRYPTO
 run_test    "EC restart: TLS, max_ops=1000, ECDHE-RSA" \
             "$P_SRV groups=secp256r1 auth_mode=required" \
             "$P_CLI force_ciphersuite=TLS-ECDHE-RSA-WITH-AES-128-GCM-SHA256 \
@@ -10367,8 +10369,8 @@ run_test    "EC restart: TLS, max_ops=1000, ECDHE-RSA" \
             0 \
             -C "x509_verify_cert.*4b00" \
             -C "mbedtls_pk_verify.*4b00" \
-            -C "mbedtls_ecdh_make_public.*4b00" \
-            -C "mbedtls_pk_sign.*4b00"
+            -c "mbedtls_ecdh_make_public.*4b00" \
+            -c "mbedtls_pk_sign.*4b00"
 
 # Tests of asynchronous private key support in SSL
 

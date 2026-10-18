@@ -1,0 +1,5 @@
+Features
+   * With MBEDTLS_ECP_RESTARTABLE, TLS 1.2 clients now make the ECDH
+     computations of the ECDHE-RSA key exchange restartable too, as they
+     already did for ECDHE-ECDSA. A handshake with an ECDHE-RSA server no
+     longer computes its ECDH in one call that cannot be interrupted.

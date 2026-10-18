@@ -809,8 +809,8 @@
  *   - X509: certificate chain verification.
  * - Adds mbedtls_ecdh_enable_restart() in the ECDH module.
  * - Changes the behaviour of TLS 1.2 clients (not servers) when using the
- *   ECDHE-ECDSA key exchange (not other key exchanges) to make all ECC
- *   computations restartable:
+ *   ECDHE-ECDSA or ECDHE-RSA key exchange (not other key exchanges) to make
+ *   all ECC computations restartable:
  *   - ECDH operations from the key exchange, only for Short Weierstrass
  *     curves, only when MBEDTLS_USE_PSA_CRYPTO is not enabled.
  *   - verification of the server's key exchange signature;

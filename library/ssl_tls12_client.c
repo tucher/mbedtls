@@ -1427,7 +1427,11 @@ static int ssl_parse_server_hello(mbedtls_ssl_context *ssl)
                           ("server hello, chosen ciphersuite: %s", suite_info->name));
 
 #if defined(MBEDTLS_SSL_ECP_RESTARTABLE_ENABLED)
-    if (suite_info->key_exchange == MBEDTLS_KEY_EXCHANGE_ECDHE_ECDSA &&
+    /* ECDHE-RSA's ECDH is the same computation as ECDHE-ECDSA's and resumes
+     * the same way; its RSA operations are verifications, which simply run
+     * to the end. */
+    if ((suite_info->key_exchange == MBEDTLS_KEY_EXCHANGE_ECDHE_ECDSA ||
+         suite_info->key_exchange == MBEDTLS_KEY_EXCHANGE_ECDHE_RSA) &&
         ssl->tls_version == MBEDTLS_SSL_VERSION_TLS1_2) {
         ssl->handshake->ecrs_enabled = 1;
     }
