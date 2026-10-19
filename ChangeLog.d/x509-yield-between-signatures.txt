@@ -1,0 +1,7 @@
+Changes
+   * With MBEDTLS_ECP_RESTARTABLE and an operation budget set, a restartable
+     X.509 chain verification -- and so a TLS 1.2 client's -- now returns
+     MBEDTLS_ERR_ECP_IN_PROGRESS after each signature it cannot cut into
+     pieces, such as an RSA one, and resumes after it. A chain of such
+     signatures used to be checked in a single call however long it was:
+     now no call checks more than one.

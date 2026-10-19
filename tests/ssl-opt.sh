@@ -10354,10 +10354,11 @@ run_test    "EC restart: TLS, max_ops=1000 no client auth (USE_PSA)" \
             -C "mbedtls_pk_sign.*4b00"
 
 # With ECDHE-RSA the ECC computations are restartable as with ECDHE-ECDSA --
-# the ECDH, and the client's signature with its EC key -- while the RSA
-# verifications of the server's signature and chain run to the end.
+# the ECDH, and the client's signature with its EC key -- while each RSA
+# verification runs to the end: the server's signature in one call, and the
+# chain's a signature a call, the chain verification yielding after each.
 # This is the same as "EC restart: TLS, max_ops=1000" except with ECDHE-RSA,
-# and the RSA assertions negated.
+# and the key exchange's RSA assertion negated.
 requires_config_enabled MBEDTLS_ECP_RESTARTABLE
 requires_config_enabled MBEDTLS_ECP_DP_SECP256R1_ENABLED
 requires_config_disabled MBEDTLS_USE_PSA_CRYPTO
@@ -10367,7 +10368,7 @@ run_test    "EC restart: TLS, max_ops=1000, ECDHE-RSA" \
              key_file=$DATA_FILES_PATH/server5.key crt_file=$DATA_FILES_PATH/server5.crt  \
              debug_level=1 ec_max_ops=1000" \
             0 \
-            -C "x509_verify_cert.*4b00" \
+            -c "x509_verify_cert.*4b00" \
             -C "mbedtls_pk_verify.*4b00" \
             -c "mbedtls_ecdh_make_public.*4b00" \
             -c "mbedtls_pk_sign.*4b00"

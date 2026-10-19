@@ -281,6 +281,8 @@ typedef struct {
 typedef struct {
     /* for check_signature() */
     mbedtls_pk_restart_ctx MBEDTLS_PRIVATE(pk);
+    int MBEDTLS_PRIVATE(sig_checked); /* 1 if a signature that cannot be cut was checked */
+    int MBEDTLS_PRIVATE(sig_ret);     /* and what its check returned */
 
     /* for find_parent_in() */
     mbedtls_x509_crt *MBEDTLS_PRIVATE(parent); /* non-null iff parent_in in progress */

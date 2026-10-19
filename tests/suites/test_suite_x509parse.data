@@ -3367,6 +3367,14 @@ X509 CRT verify restart: one int, int badsign, max_ops=500
 depends_on:MBEDTLS_PEM_PARSE_C:MBEDTLS_MD_CAN_SHA256:MBEDTLS_ECP_HAVE_SECP256R1:MBEDTLS_ECP_HAVE_SECP384R1:MBEDTLS_RSA_C
 x509_verify_restart:"../framework/data_files/server10_int3-bs.pem":"../framework/data_files/test-int-ca2.crt":MBEDTLS_ERR_X509_CERT_VERIFY_FAILED:MBEDTLS_X509_BADCERT_NOT_TRUSTED:500:25:100
 
+X509 CRT verify restart: RSA signature, max_ops=0 (disabled)
+depends_on:MBEDTLS_PEM_PARSE_C:MBEDTLS_MD_CAN_SHA256:MBEDTLS_RSA_C:MBEDTLS_PKCS1_V15
+x509_verify_restart:"../framework/data_files/server2-sha256.crt":"../framework/data_files/test-ca.crt":0:0:0:0:0
+
+X509 CRT verify restart: RSA signature, max_ops=1000, a turn after it
+depends_on:MBEDTLS_PEM_PARSE_C:MBEDTLS_MD_CAN_SHA256:MBEDTLS_RSA_C:MBEDTLS_PKCS1_V15
+x509_verify_restart:"../framework/data_files/server2-sha256.crt":"../framework/data_files/test-ca.crt":0:0:1000:1:1
+
 X509 ext types accessor: ext type present
 depends_on:MBEDTLS_X509_CRT_PARSE_C
 x509_accessor_ext_types:MBEDTLS_X509_EXT_KEY_USAGE:MBEDTLS_X509_EXT_KEY_USAGE

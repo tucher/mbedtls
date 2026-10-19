@@ -2127,6 +2127,13 @@ static int x509_crt_check_signature(const mbedtls_x509_crt *child,
 {
     size_t hash_len;
     unsigned char hash[MBEDTLS_MD_MAX_SIZE];
+#if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
+    /* Resuming after a signature checked whole, below: its result. */
+    if (rs_ctx != NULL && rs_ctx->sig_checked) {
+        rs_ctx->sig_checked = 0;
+        return rs_ctx->sig_ret;
+    }
+#endif
 #if !defined(MBEDTLS_USE_PSA_CRYPTO)
     const mbedtls_md_info_t *md_info;
     md_info = mbedtls_md_info_from_type(child->sig_md);
@@ -2161,6 +2168,18 @@ static int x509_crt_check_signature(const mbedtls_x509_crt *child,
         return mbedtls_pk_verify_restartable(&parent->pk,
                                              child->sig_md, hash, hash_len,
                                              child->sig.p, child->sig.len, &rs_ctx->pk);
+    }
+
+    /* A signature whose check cannot be cut into pieces, such as RSA, is
+     * checked whole -- and then the caller has its turn before the chain goes
+     * on, so that a chain of them takes a call each rather than all of them
+     * in one. Its result waits in the context for the call that resumes. */
+    if (rs_ctx != NULL && mbedtls_ecp_restart_is_enabled()) {
+        rs_ctx->sig_ret = mbedtls_pk_verify_ext(child->sig_pk, child->sig_opts, &parent->pk,
+                                                child->sig_md, hash, hash_len,
+                                                child->sig.p, child->sig.len);
+        rs_ctx->sig_checked = 1;
+        return MBEDTLS_ERR_ECP_IN_PROGRESS;
     }
 #else
     (void) rs_ctx;
@@ -3266,6 +3285,8 @@ void mbedtls_x509_crt_free(mbedtls_x509_crt *crt)
 void mbedtls_x509_crt_restart_init(mbedtls_x509_crt_restart_ctx *ctx)
 {
     mbedtls_pk_restart_init(&ctx->pk);
+    ctx->sig_checked = 0;
+    ctx->sig_ret = 0;
 
     ctx->parent = NULL;
     ctx->fallback_parent = NULL;
