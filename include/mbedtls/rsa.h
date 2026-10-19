@@ -79,6 +79,10 @@ extern "C" {
 #error "MBEDTLS_RSA_GEN_KEY_MIN_BITS must be at least 128 bits"
 #endif
 
+#if !defined(MBEDTLS_RSA_MAX_PUBLIC_EXPONENT_BITS)
+#define MBEDTLS_RSA_MAX_PUBLIC_EXPONENT_BITS 64
+#endif
+
 /**
  * \brief   The RSA context structure.
  */

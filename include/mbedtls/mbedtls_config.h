@@ -4206,6 +4206,7 @@
 
 /* RSA OPTIONS */
 //#define MBEDTLS_RSA_GEN_KEY_MIN_BITS            1024 /**<  Minimum RSA key size that can be generated in bits (Minimum possible value is 128 bits) */
+//#define MBEDTLS_RSA_MAX_PUBLIC_EXPONENT_BITS      64 /**<  Largest RSA public exponent accepted in a key, in bits: a public operation costs a squaring per bit. 0 for no limit */
 
 /* SSL Cache options */
 //#define MBEDTLS_SSL_CACHE_DEFAULT_TIMEOUT       86400 /**< 1 day  */

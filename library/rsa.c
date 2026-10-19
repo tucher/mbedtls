@@ -682,6 +682,15 @@ static int rsa_check_context(mbedtls_rsa_context const *ctx, int is_priv,
         return MBEDTLS_ERR_RSA_BAD_INPUT_DATA;
     }
 
+#if MBEDTLS_RSA_MAX_PUBLIC_EXPONENT_BITS > 0
+    /* A public operation costs a squaring for every bit of E, so a key with
+     * an exponent as long as its modulus makes a signature check as slow as
+     * a private operation -- and the key may be a peer's. */
+    if (mbedtls_mpi_bitlen(&ctx->E) > MBEDTLS_RSA_MAX_PUBLIC_EXPONENT_BITS) {
+        return MBEDTLS_ERR_RSA_BAD_INPUT_DATA;
+    }
+#endif
+
 #if defined(MBEDTLS_RSA_NO_CRT)
     /* For private key operations, use D or DP & DQ
      * as (unblinded) exponents. */

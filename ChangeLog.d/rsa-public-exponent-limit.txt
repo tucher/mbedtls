@@ -1,0 +1,8 @@
+Security
+   * An RSA key's public exponent is now limited to 64 bits by default, as
+     OpenSSL limits it for large moduli and BoringSSL to 33 bits: a public
+     operation costs a squaring per bit of the exponent, so a certificate
+     with an exponent as long as its modulus made checking a signature with
+     it as slow as a private operation. Keys with a longer exponent fail
+     mbedtls_rsa_check_pubkey(), and so parsing, and public operations.
+     MBEDTLS_RSA_MAX_PUBLIC_EXPONENT_BITS sets the limit; 0 removes it.
